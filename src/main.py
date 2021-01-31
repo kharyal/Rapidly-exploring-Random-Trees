@@ -33,19 +33,20 @@ step = 0
 while not (done or crashed):
     print(step)
     step = step+1
-    # time.sleep(0.01)
+    # time.sleep(0.1)
+
     # crashing the simulation manually
     for i in pygame.event.get():
       if i.type == pygame.KEYDOWN:
         if i.unicode == "q":
           crashed = True
     
-    if step%2 == 0:
+    if step%3 == 0:
+      goal = sim.goal      
+    else:
       goalx = np.random.uniform(0,h)
       goaly = np.random.uniform(0,w)
       goal = (goalx, goaly)
-    else:
-      goal = sim.goal
     
     done = robo.RRT_step(goal, sim)
 
