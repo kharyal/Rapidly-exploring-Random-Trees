@@ -40,13 +40,16 @@ class World():
 
     def print_obstacles(self, gameDisplay):
         '''
-        prints obstacles onto the display
+        prints obstacles, spawn and goal onto the display
 
         Default obstacle colour: (0,0,0)
         '''
 
         for obstacle in self.obstacles:
             pygame.draw.rect(gameDisplay, (0,0,0), pygame.Rect(obstacle[0], obstacle[1], obstacle[2], obstacle[3]))
+        
+        pygame.draw.circle(gameDisplay, (255,0,0), self.spawn, 10)
+        pygame.draw.circle(gameDisplay, (0,255,0), self.goal, 10)
     
     def check_collision_holonomic(self, start, end, num_samples = 0):
         '''
