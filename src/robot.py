@@ -48,3 +48,24 @@ class RobotHolonomic():
                 self.explored_lines.append([node,(node[0]+Vs[0,i], node[1]+Vs[1,i])])
         
         return False
+
+
+class RobotNonHolonomic():
+    def __init__(self, spawn, goal, heading, num_children = 5, d = 2, B = 5):
+        '''
+        Non-holonomic tricycle drive robot
+
+        spawn: initial position or World.spawn
+        goal: target position
+        num_children: number of children to protrude from each node of the RRT
+        d: axle length/2
+        B = robot length
+        '''
+        self.pos = spawn
+        self.goal = goal
+        self.unexplored_points = [spawn+heading]
+        self.num_children = num_children
+        self.explored_lines = []
+        self.reach_threshold = 5
+        self.d = d
+        self.B = b
