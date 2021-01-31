@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 
 class RobotHolonomic():
-    def __init__(self, spawn, goal, num_children = 3):
+    def __init__(self, spawn, goal, num_children = 5):
         '''
         spawn: initial position or World.spawn
         goal: target position

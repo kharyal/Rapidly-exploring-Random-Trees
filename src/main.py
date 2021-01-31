@@ -20,17 +20,20 @@ robo = RobotHolonomic(sim.spawn, sim.goal)
 
 obstacles = [(0,0,100,100),
              (100,150,10,100),
-             (250,250,10,300)]
+             (250,250,10,300),
+             (100, 245, 150,10),
+             (350, 0, 10, 300),
+             (350, 295, 170, 10)]
 
 sim.add_obstacles(obstacles)
 
 
-num_steps = 1000
+num_steps = 100000
 step = 0
 while not (done or crashed):
     print(step)
     step = step+1
-    time.sleep(0.5)
+    # time.sleep(0.01)
     # crashing the simulation manually
     for i in pygame.event.get():
       if i.type == pygame.KEYDOWN:
