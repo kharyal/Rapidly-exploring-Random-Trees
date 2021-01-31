@@ -29,7 +29,7 @@ class World():
         '''
         a function to add custom obstacles to the world
 
-        ONLY RECTANGULAR OBSTAClES SUPPORTED
+        ONLY RECTANGULAR OBSTACLES SUPPORTED
         obstacles: [(rect1.x_pos, rect1.y_pos, rect1.length, rect1.width), 
                     (rect2.x_pos, rect2.y_pos, rect2.length, rect2.width)...]
         '''
@@ -74,4 +74,23 @@ class World():
         return False 
 
     def grow_obstacles(self, robot_size):
-        pass
+        '''
+        A function to grow the obstacles by <robot_size> so that we can move a point robot in the world without
+        worrying about the collision
+        '''
+
+        for obstacle in self.obstacles:
+            obstacle[0] -= robot_size/2
+            obstacle[1] -= robot_size/2
+            obstacle[2] += robot_size
+            obstacle[3] += robot_size
+    
+    def reduce_obstacle(self, robot_size):
+        '''
+        A function to grow the obstacles by <robot_size>
+        '''
+        for obstacle in self.obstacles:
+            obstacle[0] += robot_size/2
+            obstacle[1] += robot_size/2
+            obstacle[2] -= robot_size
+            obstacle[3] -= robot_size        
