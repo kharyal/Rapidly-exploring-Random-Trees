@@ -11,21 +11,24 @@ h=600
 w=600
 gameDisplay=pygame.display.set_mode((h,w))
 pygame.display.set_caption("Title")
+gameDisplay.blit(pygame.transform.flip(gameDisplay, False, True), dest=(0, 0))
 
 crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotHolonomic(sim.spawn, sim.goal)
+robo = RobotNonHolonomic(sim.spawn, sim.goal)
+robot_size = robo.robot_size + 3
 
-obstacles = [(0,0,100,100),
-             (100,150,10,100),
-             (250,250,10,300),
-             (100, 245, 150,10),
-             (350, 0, 10, 300),
-             (350, 295, 170, 10)]
+obstacles = [[0,0,100,100],
+             [100,150,10,100],
+             [250,250,10,300],
+             [100, 245, 150,10],
+             [350, 0, 10, 300],
+             [350, 295, 170, 10]]
 
 sim.add_obstacles(obstacles)
+sim.grow_obstacles(robot_size)
 
 
 num_steps = 100000
@@ -51,8 +54,8 @@ while not (done or crashed):
     done = robo.RRT_step(goal, sim)
 
     gameDisplay.fill((255,255,255))
-    sim.print_obstacles(gameDisplay)
-    robo.print_paths(gameDisplay)
+    sim.print_obstacles(gameDisplay, robot_size)
+    robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
 
