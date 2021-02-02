@@ -36,7 +36,7 @@ step = 0
 while not (done or crashed):
     print(step)
     step = step+1
-    # time.sleep(0.1)
+    # time.sleep(1)
 
     # crashing the simulation manually
     for i in pygame.event.get():
@@ -44,7 +44,7 @@ while not (done or crashed):
         if i.unicode == "q":
           crashed = True
     
-    if step%3 == 0:
+    if step%2 == 0:
       goal = sim.goal      
     else:
       goalx = np.random.uniform(0,h)
@@ -55,7 +55,8 @@ while not (done or crashed):
 
     gameDisplay.fill((255,255,255))
     sim.print_obstacles(gameDisplay, robot_size)
-    robo.print_paths(gameDisplay, type='wheels')
+    robo.print_paths(gameDisplay, type='center')
+    # robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
 
