@@ -2,15 +2,7 @@ import numpy as np
 import pygame
 from copy import deepcopy
 
-# def drawCircleArc(screen,color,center,radius,startDeg,endDeg,thickness):
-#     (x,y) = center
-#     rect = (x-radius,y-radius,radius*2,radius*2)
-#     startRad = degreesToRadians(startDeg)
-#     endRad = degreesToRadians(endDeg)
-   
-#     pygame.draw.arc(screen,color,rect,startRad,endRad,thickness)
-
-class RobotHolonomic_tricycle():
+class RobotNonHolonomic_differential_drive():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d=4):
         '''
         spawn: initial position or World.spawn
@@ -125,7 +117,7 @@ class RobotHolonomic_tricycle():
         return False
 
 
-class RobotHolonomic_differential_drive():
+class RobotNonHolonomic_tricycle_drive():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d = 4, B = 5):
         '''
         Non-holonomic tricycle drive robot
@@ -268,10 +260,10 @@ class RobotHolonomic_differential_drive():
 
 
 
-class RobotNonHolonomic():
+class RobotHolonomic():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, R = 5):
         '''
-        Non-holonomic tricycle drive robot
+        Non-holonomic omnidierctional drive robot
 
         spawn: initial position or World.spawn
         goal: target position
