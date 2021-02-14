@@ -55,8 +55,8 @@ while not (done or crashed):
 
     gameDisplay.fill((255,255,255))
     sim.print_obstacles(gameDisplay, robot_size)
-    robo.print_paths(gameDisplay, type='center')
-    # robo.print_paths(gameDisplay, type='wheels')
+    # robo.print_paths(gameDisplay, type='center')
+    robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
 

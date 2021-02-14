@@ -20,7 +20,7 @@ class World():
     The world object
     '''
 
-    def __init__(self, x_range, y_range, spawn = (100,500), goal = (500,100)):
+    def __init__(self, x_range, y_range, spawn = [100,500], goal = [500,100]):
         self.x_range = 600
         self.y_range = 600
         self.obstacles = [[0,0,10,y_range], [0,0,x_range,10], [0,y_range-10,x_range,10], [x_range-10,0,10,y_range]]

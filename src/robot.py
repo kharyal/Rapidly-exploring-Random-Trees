@@ -10,7 +10,7 @@ from copy import deepcopy
    
 #     pygame.draw.arc(screen,color,rect,startRad,endRad,thickness)
 
-class RobotHolonomic():
+class RobotHolonomic_tricycle():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d=4):
         '''
         spawn: initial position or World.spawn
@@ -125,7 +125,7 @@ class RobotHolonomic():
         return False
 
 
-class RobotNonHolonomic():
+class RobotHolonomic_differential_drive():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d = 4, B = 5):
         '''
         Non-holonomic tricycle drive robot
@@ -261,6 +261,99 @@ class RobotNonHolonomic():
                         self.right_wheel_paths.append(samples_right)      
                         self.left_wheel_paths.append(samples_left)
                         self.front_wheel_paths.append(samples_front)
+
+        # print(len(self.explored_paths))
+        return False
+
+
+
+
+class RobotNonHolonomic():
+    def __init__(self, spawn, goal, heading = (1,0), num_children = 7, R = 5):
+        '''
+        Non-holonomic tricycle drive robot
+
+        spawn: initial position or World.spawn
+        goal: target position
+        num_children: number of children to protrude from each node of the RRT
+        R: Radius of the omnidirectional robot
+        '''
+
+        '''
+        assuming 3 castor wheels and a 120 degree angle between adjacent pair of wheels
+        '''
+        
+        '''
+            HEADING IS NOT INCORPORATED INTO THE CODE  
+        '''
+        # if not heading[1] == 0:
+        self.base_l = [spawn[0] - R*np.cos(np.pi/6), (spawn[1] - R*np.sin(np.pi/6))]
+        self.base_r = [spawn[0] - R*np.cos(np.pi/6), (spawn[1] + R*np.sin(np.pi/6))]
+        self.front = [spawn[0] + R, spawn[1]]
+
+        self.pos = spawn
+        self.goal = goal
+        self.unexplored_points = [spawn+self.base_r+self.base_l+self.front]
+        self.num_children = num_children
+        
+        self.explored_paths = []
+        self.right_wheel_paths = []
+        self.left_wheel_paths = []
+        self.front_wheel_paths = []
+
+        self.reach_threshold = 5
+        self.R = R
+        self.robot_size = 2*R
+
+    def print_paths(self, gameDisplay, type = 'center'):
+        if type == 'center':
+            for path in self.explored_paths:
+                pygame.draw.line(gameDisplay, (147, 205, 218), path[0], path[1])
+        elif type == 'wheels':
+            for path in self.right_wheel_paths:
+                pygame.draw.line(gameDisplay, (255, 116, 0), path[0], path[1])
+            for path in self.left_wheel_paths:
+                pygame.draw.line(gameDisplay, (250, 149, 117), path[0], path[1])
+            for path in self.front_wheel_paths:
+                pygame.draw.line(gameDisplay, (147, 205, 218), path[0], path[1])
+
+    def RRT_step(self, target, world):
+        
+        min_index = 0
+        min_distance = np.inf
+        for i, point in enumerate(self.unexplored_points):
+            distance = np.sqrt((point[0] - target[0])**2 + (point[1] - target[1])**2)
+            if distance<min_distance:
+                min_distance = distance
+                min_index = i
+            if np.sqrt((point[0] - self.goal[0])**2 + (point[1] - self.goal[1])**2) < self.reach_threshold:
+                return True
+        
+        # node = self.unexplored_points.pop(min_index)
+        node = self.unexplored_points[min_index]
+        point = (node[0], node[1])
+        right_wheel = (node[2], node[3])
+        left_wheel = (node[4], node[5])
+        front = (node[6], node[7])
+
+        Vs = np.random.uniform(-30,30, (2,self.num_children))
+        # Vs = np.array([[10],[0]])
+
+        for i in range(self.num_children):
+            
+            point_new = [point[0]+Vs[0,i], point[1]+Vs[1,i]]
+            right_wheel_new = [right_wheel[0]+Vs[0,i], right_wheel[1]+Vs[1,i]]
+            left_wheel_new = [left_wheel[0]+Vs[0,i], left_wheel[1]+Vs[1,i]]
+            front_new = [front[0]+Vs[0,i], front[1]+Vs[1,i]]
+
+            if world.check_collision_holonomic(point, point_new):
+                break
+            else:
+                self.explored_paths.append((point, point_new))
+                self.unexplored_points.append(point_new+right_wheel_new+left_wheel_new+front_new)  
+                self.right_wheel_paths.append((right_wheel, right_wheel_new))      
+                self.left_wheel_paths.append((left_wheel, left_wheel_new))
+                self.front_wheel_paths.append((front, front_new))
 
         # print(len(self.explored_paths))
         return False
