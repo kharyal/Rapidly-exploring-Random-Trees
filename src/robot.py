@@ -3,15 +3,15 @@ import pygame
 from copy import deepcopy
 
 class RobotNonHolonomic_differential_drive():
-    def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d=4):
+    def __init__(self, spawn, goal, heading = [1,0], num_children = 7, d=4):
         '''
         spawn: initial position or World.spawn
         goal: target position
         num_children: number of children to protrude from each node of the RRT
         '''
 
-        self.base_l = (spawn[0] + d*heading[1], (spawn[1] - heading[0]*d))
-        self.base_r = (spawn[0] - d*heading[1], (spawn[1] + heading[0]*d))
+        self.base_l = [spawn[0] + d*heading[1], (spawn[1] - heading[0]*d)]
+        self.base_r = [spawn[0] - d*heading[1], (spawn[1] + heading[0]*d)]
 
         self.pos = spawn
         self.goal = goal
@@ -58,10 +58,10 @@ class RobotNonHolonomic_differential_drive():
         # node = self.unexplored_points.pop(min_index)
         node = self.unexplored_points[min_index]
 
-        point = (node[0], node[1])
-        heading = (node[2], node[3])
-        right_wheel = (node[4], node[5])
-        left_wheel = (node[6], node[7])
+        point = [node[0], node[1]]
+        heading = [node[2], node[3]]
+        right_wheel = [node[4], node[5]]
+        left_wheel = [node[6], node[7]]
 
         Vws = np.random.uniform(-40,40, (2,self.num_children))
 
@@ -93,9 +93,9 @@ class RobotNonHolonomic_differential_drive():
                 velocity_right = np.array(heading_)*Vws[0,i]/num_samples
                 velocity_left = np.array(heading_)*Vws[1,i]/num_samples
 
-                point_ = deepcopy((point_[0]+velocity[0], point_[1]+velocity[1]))
-                right_wheel_ = deepcopy((right_wheel_[0]+velocity_right[0], right_wheel_[1]+velocity_right[1]))
-                left_wheel_ = deepcopy((left_wheel_[0]+velocity_left[0], left_wheel_[1]+velocity_left[1]))
+                point_ = deepcopy([point_[0]+velocity[0], point_[1]+velocity[1]])
+                right_wheel_ = deepcopy([right_wheel_[0]+velocity_right[0], right_wheel_[1]+velocity_right[1]])
+                left_wheel_ = deepcopy([left_wheel_[0]+velocity_left[0], left_wheel_[1]+velocity_left[1]])
                 # right_wheel_ = deepcopy((point_[0] + self.d*heading_[1], (point_[1] - heading_[0]*self.d)))
                 # left_wheel_ = deepcopy((point_[0] - self.d*heading_[1], (point_[1] + heading_[0]*self.d)))
 
@@ -104,13 +104,13 @@ class RobotNonHolonomic_differential_drive():
                 samples_left.append(deepcopy(left_wheel_))
 
                 heading_ = R@(np.array(heading_).T)
-                heading_ = (heading_[0], heading_[1])         
+                heading_ = [heading_[0], heading_[1]]         
                 if j%5 == 4:
                     if world.check_collision_holonomic(point_, prev_point):
                         break
                     elif j == num_samples-1:
                         self.explored_paths.append(samples)
-                        self.unexplored_points.append((point_[0], point_[1], heading_[0], heading_[1])+right_wheel_+left_wheel_)  
+                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_)  
                         self.right_wheel_paths.append(samples_right)      
                         self.left_wheel_paths.append(samples_left)
         

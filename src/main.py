@@ -17,7 +17,7 @@ crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotNonHolonomic(sim.spawn, sim.goal)
+robo = RobotNonHolonomic_differential_drive(sim.spawn, sim.goal)
 robot_size = robo.robot_size + 3
 
 obstacles = [[0,0,100,100],
