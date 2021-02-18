@@ -17,7 +17,7 @@ crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotNonHolonomic_differential_drive(sim.spawn, sim.goal)
+robo = RobotNonHolonomic_tricycle_drive(sim.spawn, sim.goal)
 robot_size = robo.robot_size + 3
 
 obstacles = [[0,0,100,100],
@@ -55,8 +55,8 @@ while not (done or crashed):
 
     gameDisplay.fill((255,255,255))
     sim.print_obstacles(gameDisplay, robot_size)
-    # robo.print_paths(gameDisplay, type='center')
-    robo.print_paths(gameDisplay, type='wheels')
+    robo.print_paths(gameDisplay, type='center')
+    # robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
 

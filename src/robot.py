@@ -118,7 +118,7 @@ class RobotNonHolonomic_differential_drive():
 
 
 class RobotNonHolonomic_tricycle_drive():
-    def __init__(self, spawn, goal, heading = (1,0), num_children = 7, d = 4, B = 5):
+    def __init__(self, spawn, goal, heading = [1,0], num_children = 7, d = 4, B = 5):
         '''
         Non-holonomic tricycle drive robot
 
@@ -138,9 +138,9 @@ class RobotNonHolonomic_tricycle_drive():
         '''
 
         # if not heading[1] == 0:
-        self.base_l = (spawn[0] + d*heading[1], (spawn[1] - heading[0]*d))
-        self.base_r = (spawn[0] - d*heading[1], (spawn[1] + heading[0]*d))
-        self.front = (spawn[0] + B*heading[0], spawn[1] + B*heading[1],)
+        self.base_l = [spawn[0] + d*heading[1], (spawn[1] - heading[0]*d)]
+        self.base_r = [spawn[0] - d*heading[1], (spawn[1] + heading[0]*d)]
+        self.front = [spawn[0] + B*heading[0], spawn[1] + B*heading[1]]
 
         self.pos = spawn
         self.goal = goal
@@ -184,11 +184,11 @@ class RobotNonHolonomic_tricycle_drive():
         # node = self.unexplored_points.pop(min_index)
         node = self.unexplored_points[min_index]
 
-        point = (node[0], node[1])
-        heading = (node[2], node[3])
-        right_wheel = (node[4], node[5])
-        left_wheel = (node[6], node[7])
-        front = (node[8], node[9])
+        point = [node[0], node[1]]
+        heading = [node[2], node[3]]
+        right_wheel = [node[4], node[5]]
+        left_wheel = [node[6], node[7]]
+        front = [node[8], node[9]]
 
         Vfs = np.random.uniform(-30,30, (1,self.num_children))
         alphas = np.random.uniform(-np.pi/6,np.pi/6, (1,self.num_children))
@@ -229,10 +229,10 @@ class RobotNonHolonomic_tricycle_drive():
                 heading_front = R_alpha@(np.array(heading_).T)
                 velocity_front = np.array(heading_front)*Vfs[0,i]/num_samples
 
-                point_ = deepcopy((point_[0]+velocity[0], point_[1]+velocity[1]))
-                right_wheel_ = deepcopy((right_wheel_[0]+velocity_right[0], right_wheel_[1]+velocity_right[1]))
-                left_wheel_ = deepcopy((left_wheel_[0]+velocity_left[0], left_wheel_[1]+velocity_left[1]))
-                front_ = deepcopy((front_[0]+velocity_front[0], front_[1]+velocity_front[1]))
+                point_ = deepcopy([point_[0]+velocity[0], point_[1]+velocity[1]])
+                right_wheel_ = deepcopy([right_wheel_[0]+velocity_right[0], right_wheel_[1]+velocity_right[1]])
+                left_wheel_ = deepcopy([left_wheel_[0]+velocity_left[0], left_wheel_[1]+velocity_left[1]])
+                front_ = deepcopy([front_[0]+velocity_front[0], front_[1]+velocity_front[1]])
                 # right_wheel_ = deepcopy((point_[0] + self.d*heading_[1], (point_[1] - heading_[0]*self.d)))
                 # left_wheel_ = deepcopy((point_[0] - self.d*heading_[1], (point_[1] + heading_[0]*self.d)))
 
@@ -243,13 +243,13 @@ class RobotNonHolonomic_tricycle_drive():
                 samples_front.append(deepcopy(front_))
 
                 heading_ = R@(np.array(heading_).T)
-                heading_ = (heading_[0], heading_[1])         
+                heading_ = [heading_[0], heading_[1]]         
                 if j%5 == 4:
                     if world.check_collision_holonomic(point_, prev_point):
                         break
                     elif j == num_samples-1:
                         self.explored_paths.append(samples)
-                        self.unexplored_points.append((point_[0], point_[1], heading_[0], heading_[1])+right_wheel_+left_wheel_+front_)  
+                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_+front_)  
                         self.right_wheel_paths.append(samples_right)      
                         self.left_wheel_paths.append(samples_left)
                         self.front_wheel_paths.append(samples_front)
