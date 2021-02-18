@@ -6,7 +6,7 @@ from robot import*
 import time
 
 clock = pygame.time.Clock()
-
+np.random.seed(100)
 h=600
 w=600
 gameDisplay=pygame.display.set_mode((h,w))
@@ -17,7 +17,7 @@ crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotNonHolonomic_tricycle_drive(sim.spawn, sim.goal)
+robo = RobotHolonomic(sim.spawn, sim.goal)
 robot_size = robo.robot_size + 3
 
 obstacles = [[0,0,100,100],
@@ -25,7 +25,12 @@ obstacles = [[0,0,100,100],
              [250,250,10,300],
              [100, 245, 150,10],
              [350, 0, 10, 300],
-             [350, 295, 170, 10]]
+             [350, 295, 170, 10],
+             [250, 515, 300, 10],
+             [450, 325, 10, 140],
+             [350, 395, 200, 10],
+             [220, 50, 10, 150],
+             [145, 125, 150, 10]]
 
 sim.add_obstacles(obstacles)
 sim.grow_obstacles(robot_size)
@@ -44,7 +49,7 @@ while not (done or crashed):
         if i.unicode == "q":
           crashed = True
     
-    if step%2 == 0:
+    if step%5 == 0:
       goal = sim.goal      
     else:
       goalx = np.random.uniform(0,h)
@@ -55,8 +60,8 @@ while not (done or crashed):
 
     gameDisplay.fill((255,255,255))
     sim.print_obstacles(gameDisplay, robot_size)
-    robo.print_paths(gameDisplay, type='center')
-    # robo.print_paths(gameDisplay, type='wheels')
+    # robo.print_paths(gameDisplay, type='center')
+    robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
 
