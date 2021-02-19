@@ -17,7 +17,7 @@ crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotHolonomic(sim.spawn, sim.goal)
+robo = RobotNonHolonomic_tricycle_drive(sim.spawn, sim.goal)
 robot_size = robo.robot_size + 3
 
 obstacles = [[0,0,100,100],
@@ -38,6 +38,8 @@ sim.grow_obstacles(robot_size)
 
 num_steps = 100000
 step = 0
+j = 0
+image_save = False
 while not (done or crashed):
     print(step)
     step = step+1
@@ -64,6 +66,8 @@ while not (done or crashed):
     robo.print_paths(gameDisplay, type='wheels')
     pygame.display.update()
     clock.tick(60)
-
+    if (image_save == True):
+      pygame.image.save(gameDisplay, "../../Tricycle_drive_wheels/"+str(j)+".png")
+      j = j + 1
     if step>num_steps:
       done = True

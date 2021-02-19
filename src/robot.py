@@ -263,7 +263,7 @@ class RobotNonHolonomic_tricycle_drive():
 class RobotHolonomic():
     def __init__(self, spawn, goal, heading = (1,0), num_children = 7, R = 5):
         '''
-        Non-holonomic omnidierctional drive robot
+        Non-holonomic omnidirectional drive robot
 
         spawn: initial position or World.spawn
         goal: target position
