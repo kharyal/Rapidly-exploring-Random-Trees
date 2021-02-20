@@ -17,7 +17,9 @@ crashed = False; done = False
 
 sim = World(h,w)
 
-robo = RobotHolonomic(sim.spawn, sim.goal)
+robo = RobotNonHolonomic_differential_drive(sim.spawn, sim.goal)
+# robo = RobotNonHolonomic_tricycle_drive(sim.spawn, sim.goal)
+# robo = RobotHolonomic(sim.spawn, sim.goal)
 robot_size = robo.robot_size + 3
 
 obstacles = [[0,0,100,100],
@@ -38,7 +40,7 @@ sim.grow_obstacles(robot_size)
 
 num_steps = 100000
 step = 0
-while not (done or crashed):
+while not (crashed):
     print(step)
     step = step+1
     # time.sleep(1)
@@ -60,10 +62,10 @@ while not (done or crashed):
 
     gameDisplay.fill((255,255,255))
     sim.print_obstacles(gameDisplay, robot_size)
-    # robo.print_paths(gameDisplay, type='center')
-    robo.print_paths(gameDisplay, type='wheels')
+    robo.print_paths(gameDisplay, type='center', done=done)
+    # robo.print_paths(gameDisplay, type='wheels', done=done)
     pygame.display.update()
     clock.tick(60)
 
-    if step>num_steps:
-      done = True
+    # if step>num_steps:
+    #   done = True

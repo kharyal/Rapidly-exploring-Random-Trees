@@ -15,7 +15,7 @@ class RobotNonHolonomic_differential_drive():
 
         self.pos = spawn
         self.goal = goal
-        self.unexplored_points = [spawn+heading+self.base_l+self.base_r]
+        self.unexplored_points = [spawn+heading+self.base_l+self.base_r+[None]+[None]]
         self.num_children = num_children
         
         self.explored_paths = []
@@ -25,6 +25,7 @@ class RobotNonHolonomic_differential_drive():
         self.reach_threshold = 5
         self.d = d
         self.robot_size = 2*d
+        self.final_path = []
 
     def print_robot(self, gameDisplay):
         '''
@@ -32,15 +33,28 @@ class RobotNonHolonomic_differential_drive():
         '''
         pygame.draw.circle(gameDisplay,(0,0,255),self.pos, (3,3))
 
-    def print_paths(self, gameDisplay, type = 'center'):
-        if type == 'center':
-            for path in self.explored_paths:
-                pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
-        elif type == 'wheels':
-            for path in self.right_wheel_paths:
-                pygame.draw.lines(gameDisplay, (255, 116, 0), False, path)
-            for path in self.left_wheel_paths:
-                pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+    def print_paths(self, gameDisplay, type = 'center', done = False):
+        if not done:
+            if type == 'center':
+                for path in self.explored_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+            elif type == 'wheels':
+                for path in self.right_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (255, 116, 0), False, path)
+                for path in self.left_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+        else:
+            for path in self.final_path:
+                pygame.draw.lines(gameDisplay, (255,0,0), False, path)
+
+    def backtrack(self, idx):
+        node = self.unexplored_points[idx]
+        parent = node[8]
+        self.final_path.append(self.explored_paths[node[9]])
+        while parent is not 0:
+            node = self.unexplored_points[parent]
+            parent = deepcopy(node[8])
+            self.final_path.append(self.explored_paths[node[9]])
             
     def RRT_step(self, target, world):
         
@@ -52,6 +66,7 @@ class RobotNonHolonomic_differential_drive():
                 min_distance = distance
                 min_index = i
             if np.sqrt((point[0] - self.goal[0])**2 + (point[1] - self.goal[1])**2) < self.reach_threshold:
+                self.backtrack(i)
                 return True
         
 
@@ -110,7 +125,7 @@ class RobotNonHolonomic_differential_drive():
                         break
                     elif j == num_samples-1:
                         self.explored_paths.append(samples)
-                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_)  
+                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_+[min_index]+[len(self.explored_paths)-1])  
                         self.right_wheel_paths.append(samples_right)      
                         self.left_wheel_paths.append(samples_left)
         
@@ -144,7 +159,7 @@ class RobotNonHolonomic_tricycle_drive():
 
         self.pos = spawn
         self.goal = goal
-        self.unexplored_points = [spawn+heading+self.base_r+self.base_l+self.front]
+        self.unexplored_points = [spawn+heading+self.base_r+self.base_l+self.front+[None]+[None]]
         self.num_children = num_children
         
         self.explored_paths = []
@@ -156,18 +171,30 @@ class RobotNonHolonomic_tricycle_drive():
         self.d = d
         self.B = B
         self.robot_size = max(2*d, B)
+        self.final_path = []
 
-    def print_paths(self, gameDisplay, type = 'center'):
-        if type == 'center':
-            for path in self.explored_paths:
-                pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
-        elif type == 'wheels':
-            for path in self.right_wheel_paths:
-                pygame.draw.lines(gameDisplay, (255, 116, 0), False, path)
-            for path in self.left_wheel_paths:
-                pygame.draw.lines(gameDisplay, (250, 149, 117), False, path)
-            for path in self.front_wheel_paths:
-                pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+    def print_paths(self, gameDisplay, type = 'center', done = False):
+        if not done:
+            if type == 'center':
+                for path in self.explored_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+            elif type == 'wheels':
+                for path in self.right_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (255, 116, 0), False, path)
+                for path in self.left_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+        else:
+            for path in self.final_path:
+                pygame.draw.lines(gameDisplay, (255,0,0), False, path)
+
+    def backtrack(self, idx):
+        node = self.unexplored_points[idx]
+        parent = node[10]
+        self.final_path.append(self.explored_paths[node[11]])
+        while parent is not 0:
+            node = self.unexplored_points[parent]
+            parent = deepcopy(node[10])
+            self.final_path.append(self.explored_paths[node[11]])
 
     def RRT_step(self, target, world):
         
@@ -179,6 +206,7 @@ class RobotNonHolonomic_tricycle_drive():
                 min_distance = distance
                 min_index = i
             if np.sqrt((point[0] - self.goal[0])**2 + (point[1] - self.goal[1])**2) < self.reach_threshold:
+                self.backtrack(i)
                 return True
         
         # node = self.unexplored_points.pop(min_index)
@@ -249,7 +277,7 @@ class RobotNonHolonomic_tricycle_drive():
                         break
                     elif j == num_samples-1:
                         self.explored_paths.append(samples)
-                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_+front_)  
+                        self.unexplored_points.append([point_[0], point_[1], heading_[0], heading_[1]]+right_wheel_+left_wheel_+front_+[min_index]+[len(self.explored_paths)-1])  
                         self.right_wheel_paths.append(samples_right)      
                         self.left_wheel_paths.append(samples_left)
                         self.front_wheel_paths.append(samples_front)
@@ -285,7 +313,7 @@ class RobotHolonomic():
 
         self.pos = spawn
         self.goal = goal
-        self.unexplored_points = [spawn+self.base_r+self.base_l+self.front]
+        self.unexplored_points = [spawn+self.base_r+self.base_l+self.front+[None]+[None]]
         self.num_children = num_children
         
         self.explored_paths = []
@@ -296,18 +324,30 @@ class RobotHolonomic():
         self.reach_threshold = 5
         self.R = R
         self.robot_size = 2*R
+        self.final_path = []
 
-    def print_paths(self, gameDisplay, type = 'center'):
-        if type == 'center':
-            for path in self.explored_paths:
-                pygame.draw.line(gameDisplay, (147, 205, 218), path[0], path[1])
-        elif type == 'wheels':
-            for path in self.right_wheel_paths:
-                pygame.draw.line(gameDisplay, (255, 116, 0), path[0], path[1])
-            for path in self.left_wheel_paths:
-                pygame.draw.line(gameDisplay, (250, 149, 117), path[0], path[1])
-            for path in self.front_wheel_paths:
-                pygame.draw.line(gameDisplay, (147, 205, 218), path[0], path[1])
+    def print_paths(self, gameDisplay, type = 'center', done = False):
+        if not done:
+            if type == 'center':
+                for path in self.explored_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+            elif type == 'wheels':
+                for path in self.right_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (255, 116, 0), False, path)
+                for path in self.left_wheel_paths:
+                    pygame.draw.lines(gameDisplay, (147, 205, 218), False, path)
+        else:
+            for path in self.final_path:
+                pygame.draw.lines(gameDisplay, (255,0,0), False, path)
+
+    def backtrack(self, idx):
+        node = self.unexplored_points[idx]
+        parent = node[8]
+        self.final_path.append(self.explored_paths[node[9]])
+        while parent is not 0:
+            node = self.unexplored_points[parent]
+            parent = deepcopy(node[8])
+            self.final_path.append(self.explored_paths[node[9]])
 
     def RRT_step(self, target, world):
         
@@ -319,6 +359,7 @@ class RobotHolonomic():
                 min_distance = distance
                 min_index = i
             if np.sqrt((point[0] - self.goal[0])**2 + (point[1] - self.goal[1])**2) < self.reach_threshold:
+                self.backtrack(i)
                 return True
         
         # node = self.unexplored_points.pop(min_index)
@@ -342,7 +383,7 @@ class RobotHolonomic():
                 break
             else:
                 self.explored_paths.append((point, point_new))
-                self.unexplored_points.append(point_new+right_wheel_new+left_wheel_new+front_new)  
+                self.unexplored_points.append(point_new+right_wheel_new+left_wheel_new+front_new+[min_index]+[len(self.explored_paths)-1])  
                 self.right_wheel_paths.append((right_wheel, right_wheel_new))      
                 self.left_wheel_paths.append((left_wheel, left_wheel_new))
                 self.front_wheel_paths.append((front, front_new))
